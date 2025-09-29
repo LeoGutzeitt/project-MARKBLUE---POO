@@ -1,5 +1,5 @@
 package br.edu.cs.poo.ac.ordem.entidades;
 
-public class PrecoBase {
+public class PrecoBase1 {
 
 }
