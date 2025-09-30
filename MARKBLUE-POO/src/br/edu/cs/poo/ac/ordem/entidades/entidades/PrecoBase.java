@@ -1,3 +1,3 @@
-public class PrecoBase {
+public class PrecoBase1 {
 
 }
