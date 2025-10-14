@@ -6,7 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 
-
 public class Notebook extends Equipamento {
 
     private boolean carregaDadosSensiveis;
@@ -20,6 +19,4 @@ public class Notebook extends Equipamento {
     public String getIdTipo(){
         return "NO";
     }
-
-
 }
