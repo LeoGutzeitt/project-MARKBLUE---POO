@@ -1,6 +1,8 @@
 package br.edu.cs.poo.ac.ordem.testes;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,4 +54,24 @@ public class TesteAbstrato {
         Assertions.assertNotNull(res.getMensagensErro());
         Assertions.assertEquals(0, res.getMensagensErro().tamanho());
     }
+
+    protected boolean temUmSoConstrutorPrivado(Class classe) {
+        Constructor<?>[] construtores = classe.getDeclaredConstructors();
+        if (construtores == null || construtores.length != 1) {
+            return false;
+        } else {
+            return Modifier.isPrivate(construtores[0].getModifiers());
+        }
+    }
+    protected boolean herdaDe(Class<?> classeFilha, Class<?> classeMae) {
+        Class<?> atual = classeFilha.getSuperclass();
+        while (atual != null) {
+            if (atual.equals(classeMae)) {
+                return true;
+            }
+            atual = atual.getSuperclass();
+        }
+        return false;
+    }
+
 }

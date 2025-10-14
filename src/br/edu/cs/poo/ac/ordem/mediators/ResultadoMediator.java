@@ -24,4 +24,8 @@ public class ResultadoMediator {
     public ListaString getMensagensErro() {
         return mensagensErro;
     }
+
+    public String toString() {
+        return mensagensErro.toString();
+    }
 }

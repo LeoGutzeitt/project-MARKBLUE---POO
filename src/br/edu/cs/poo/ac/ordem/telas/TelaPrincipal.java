@@ -1,52 +1,36 @@
 package br.edu.cs.poo.ac.ordem.telas;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 public class TelaPrincipal extends JFrame {
-
     public TelaPrincipal() {
-        setTitle("Sistema de Ordem de Serviço");
-        setSize(400, 250);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLayout(null);
+        this.setTitle("Sistema de Gestão");
+        this.setSize(800, 600);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLocationRelativeTo(null);
 
-        JLabel lblTitulo = new JLabel("Menu Principal");
-        lblTitulo.setBounds(140, 20, 200, 30);
-        add(lblTitulo);
+        JMenuBar menuBar = new JMenuBar();
+        setJMenuBar(menuBar);
 
-        JButton btnNovaOS = new JButton("Nova Ordem de Serviço");
-        btnNovaOS.setBounds(100, 70, 200, 30);
-        add(btnNovaOS);
+        JMenu menuCliente = new JMenu("Cliente");
+        menuBar.add(menuCliente);
 
-        JButton btnListarOS = new JButton("Listar Ordens");
-        btnListarOS.setBounds(100, 110, 200, 30);
-        add(btnListarOS);
+        JMenuItem crudCliente = new JMenuItem("CRUD Cliente");
+        menuCliente.add(crudCliente);
+        crudCliente.addActionListener(e -> new TelaCliente());
 
-        JButton btnSair = new JButton("Sair");
-        btnSair.setBounds(100, 150, 200, 30);
-        add(btnSair);
+        JMenu menuEquip = new JMenu("Equipamento");
+        menuBar.add(menuEquip);
 
-        btnNovaOS.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new TelaOrdemServico().setVisible(true);
-            }
-        });
+        JMenuItem crudEquip = new JMenuItem("CRUD Equipamento");
+        menuEquip.add(crudEquip);
+        crudEquip.addActionListener(e -> new TelaEquipamento());
 
-        btnListarOS.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new TelaListaOS().setVisible(true);
-            }
-        });
-
-        btnSair.addActionListener(e -> System.exit(0));
+        this.setVisible(true);
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new TelaPrincipal().setVisible(true));
+        new TelaPrincipal();
     }
 }

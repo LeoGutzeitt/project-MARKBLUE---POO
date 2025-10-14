@@ -298,4 +298,10 @@ public class TesteClienteMediator extends TesteAbstrato {
         cliente = new Cliente(null, null, new Contato("xxx@yyy.edu.us", "   ", true), null);
         assertionsContato(conversor, cliente, CELULAR_NAO_INFORMADO_E_INDICADOR_DE_ZAP_ATIVO);
     }
+
+    @Test
+    public void testeSingleton() {
+        Assertions.assertTrue(temUmSoConstrutorPrivado(ClienteMediator.class));
+    }
+
 }

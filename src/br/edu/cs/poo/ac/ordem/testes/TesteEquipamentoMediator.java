@@ -11,6 +11,7 @@ import br.edu.cs.poo.ac.ordem.entidades.Cliente;
 import br.edu.cs.poo.ac.ordem.entidades.Contato;
 import br.edu.cs.poo.ac.ordem.entidades.Desktop;
 import br.edu.cs.poo.ac.ordem.entidades.Notebook;
+import br.edu.cs.poo.ac.ordem.mediators.ClienteMediator;
 import br.edu.cs.poo.ac.ordem.mediators.DadosEquipamento;
 import br.edu.cs.poo.ac.ordem.mediators.EquipamentoMediator;
 import br.edu.cs.poo.ac.ordem.mediators.ResultadoMediator;
@@ -476,6 +477,10 @@ public class TesteEquipamentoMediator extends TesteAbstrato {
         Assertions.assertNotNull(res.getMensagensErro());
         Assertions.assertEquals(1, res.getMensagensErro().tamanho());
         Assertions.assertEquals(1, obterQuantidadeRegistrosPorTipo(tipo));
+    }
+    @Test
+    public void testeSingleton() {
+        Assertions.assertTrue(temUmSoConstrutorPrivado(EquipamentoMediator.class));
     }
 
 }

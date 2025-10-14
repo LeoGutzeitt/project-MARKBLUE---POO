@@ -1,11 +1,14 @@
 package br.edu.cs.poo.ac.utils;
 
 public class ValidadorCPFCNPJ {
+
     public static ResultadoValidacaoCPFCNPJ validarCPFCNPJ(String cpfCnpj) {
+
         boolean cpf = ValidadorCPFCNPJ.isCPF(cpfCnpj);
         boolean cnpj = ValidadorCPFCNPJ.isCNPJ(cpfCnpj);
 
         ErroValidacaoCPFCNPJ tipoERRO = null;
+
 
         if(!cpf && !cnpj) tipoERRO = ErroValidacaoCPFCNPJ.CPF_CNPJ_NAO_E_CPF_NEM_CNPJ;
 
@@ -16,6 +19,7 @@ public class ValidadorCPFCNPJ {
         else tipoERRO = ErroValidacaoCPFCNPJ.CPF_CNPJ_NAO_E_CPF_NEM_CNPJ;
 
         return new ResultadoValidacaoCPFCNPJ(cpf, cnpj, tipoERRO);
+
     }
 
     private static boolean isNumber(char c) {
@@ -43,6 +47,7 @@ public class ValidadorCPFCNPJ {
     }
 
     public static ErroValidacaoCPFCNPJ validarCPF(String cpf) {
+
         if (StringUtils.estaVazia(cpf))return ErroValidacaoCPFCNPJ.CPF_CNPJ_NULO_OU_BRANCO;
 
         if(!isDigitoVerificadorValidoCPF(cpf)) return ErroValidacaoCPFCNPJ.CPF_CNPJ_COM_DV_INVALIDO;
@@ -53,13 +58,19 @@ public class ValidadorCPFCNPJ {
     }
 
     public static ErroValidacaoCPFCNPJ validarCNPJ(String cnpj) {
+
+        //if(cnpj==null) return ErroValidacaoCPFCNPJ.CPF_CNPJ_NULO_OU_BRANCO;
+
         if (StringUtils.estaVazia(cnpj))return ErroValidacaoCPFCNPJ.CPF_CNPJ_NULO_OU_BRANCO;
+
+        //if(cnpj==null || cnpj.isBlank() || cnpj.isEmpty()) return ErroValidacaoCPFCNPJ.CPF_CNPJ_NULO_OU_BRANCO;
 
         if(!isDigitoVerificadorValidoCNPJ(cnpj)) return ErroValidacaoCPFCNPJ.CPF_CNPJ_COM_DV_INVALIDO;
 
         if(!cnpj.matches("\\d+")) return ErroValidacaoCPFCNPJ.CPF_CNPJ_COM_CARACTERES_INVALIDOS;
 
         return null;
+
     }
 
     private static boolean isDigitoVerificadorValidoCPF(String cpf) {

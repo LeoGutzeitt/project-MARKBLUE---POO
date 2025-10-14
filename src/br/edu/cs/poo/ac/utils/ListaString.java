@@ -49,13 +49,12 @@ public class ListaString {
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append('[');
         ElementoListaString cur = primeiro;
         while(cur != null) {
             sb.append(cur.getConteudo());
+            sb.append('\n');
             cur = cur.getProximo();
         }
-        sb.append(']');
         return sb.toString();
     }
 }

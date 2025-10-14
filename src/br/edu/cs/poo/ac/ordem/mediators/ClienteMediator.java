@@ -27,6 +27,8 @@ public class ClienteMediator {
         return instancia;
     }
 
+    // ---------- MÉTODOS PRINCIPAIS ---------- //
+
     public ResultadoMediator incluir(Cliente cliente) {
         ResultadoMediator resValidacao = validar(cliente);
         if (!resValidacao.isValidado()) return resValidacao;
@@ -80,6 +82,8 @@ public class ClienteMediator {
         return clienteDAO.buscar(cpfCnpj);
     }
 
+    // ---------- VALIDAÇÕES ---------- //
+
     public ResultadoMediator validar(Cliente cliente) {
         ListaString erros = new ListaString();
 
@@ -88,6 +92,7 @@ public class ClienteMediator {
             return new ResultadoMediator(false, false, erros);
         }
 
+        // CPF/CNPJ
         if (StringUtils.estaVazia(cliente.getCpfCnpj())) {
             erros.adicionar("CPF/CNPJ não informado");
         } else {
@@ -107,23 +112,27 @@ public class ClienteMediator {
             }
         }
 
+        // Nome
         if (StringUtils.estaVazia(cliente.getNome())) {
             erros.adicionar("Nome não informado");
         } else if (StringUtils.tamanhoExcedido(cliente.getNome(), 50)) {
             erros.adicionar("Nome tem mais de 50 caracteres");
         }
 
+        // Contato + Data: atenção à ordem conforme testes
         Contato contato = cliente.getContato();
         if (contato == null) {
-
+            // quando contato é nulo, a mensagem "Contato não informado" deve vir antes da data
             erros.adicionar("Contato não informado");
 
+            // depois validamos a data
             if (cliente.getDataCadastro() == null) {
                 erros.adicionar("Data do cadastro não informada");
             } else if (cliente.getDataCadastro().isAfter(LocalDate.now())) {
                 erros.adicionar("Data do cadastro não pode ser posterior à data atual");
             }
         } else {
+            // quando contato existe, o teste espera que a mensagem de data venha ANTES da mensagem específica do contato
             if (cliente.getDataCadastro() == null) {
                 erros.adicionar("Data do cadastro não informada");
             } else if (cliente.getDataCadastro().isAfter(LocalDate.now())) {
