@@ -1,54 +1,84 @@
 package br.edu.cs.poo.ac.ordem.entidades;
 
-import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
+import br.edu.cs.poo.ac.utils.Registro;
+
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import java.io.Serializable;
 
-@AllArgsConstructor
-@Getter
-@Setter
+@Getter @Setter
 
-public class OrdemServico implements Serializable {
-
-    private Cliente cliente;
-    private PrecoBase precoBase;
-    private Notebook notebook;
-    private Desktop desktop;
-    private LocalDateTime dataHoraAbertura;
-    private int prazoEmDias;
-    private double valor;
-
-    public LocalDate getDataEstimadaEntrega() {
-
-        LocalDate dataAbertura = dataHoraAbertura.toLocalDate();
-
-        return dataAbertura.plusDays(prazoEmDias);
-    }
-
-    public String getNumero() {
-
-        String concatenacao = "";
-        if (notebook != null) {
-            concatenacao += notebook.getIdTipo();
-        } else{
-            concatenacao += desktop.getIdTipo();
-        }
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-        concatenacao += dataHoraAbertura.format(formatter);
-
-        if (cliente.getCpfCnpj().length() > 11) {
-            concatenacao += cliente.getCpfCnpj();
-        } else {
-            concatenacao += "000" + cliente.getCpfCnpj();
-        }
-
-        return concatenacao;
-    }
-
+public class OrdemServico implements Registro{
+	
+	private Cliente cliente;
+	
+	private PrecoBase precoBase;
+	
+	private Equipamento equipamento;
+	
+//	private Notebook notebook;
+//	private Desktop desktop;
+	
+	private LocalDateTime dataHoraAbertura = LocalDateTime.now();
+	
+	private int prazoEmDias;
+	
+	private double valor;
+	
+	private FechamentoOrdemServico dadosFechamento;
+	private LocalDateTime dataHoraCancelamento;
+	private String motivoCancelamento;
+	private StatusOrdem status;
+	private String vendedor;
+	
+	public OrdemServico(Cliente cliente, PrecoBase precoBase, Equipamento equipamento, LocalDateTime dataHoraAbertura, int prazoEmDias, double valor) {
+		this.cliente = cliente;
+		this.precoBase = precoBase;
+		this.equipamento = equipamento;
+		this.dataHoraAbertura = dataHoraAbertura;
+		this.prazoEmDias = prazoEmDias;
+		this.valor = valor;
+	}
+//	public OrdemServico(Cliente cli, PrecoBase precoBase, Notebook note, Desktop desk, LocalDateTime data, int prazo, double valor) {
+//		this.cliente = cli;
+//		this.precoBase = precoBase;
+//		this.equipamento = note != null ? note : desk;
+//		this.dataHoraAbertura = data;
+//		this.prazoEmDias = prazo;
+//		this.valor = valor;
+//	}
+	public LocalDate getDataEstimadaEntrega() {
+		LocalDate dataHora = dataHoraAbertura.toLocalDate();
+		return dataHora.plusDays(prazoEmDias);
+	}
+	public String getNumero() {
+		
+		String id = equipamento.getIdTipo();
+		
+		String numeros = cliente.getCpfCnpj().replace(".", "").replace("-", "");
+		
+		String data = dataHoraAbertura.toLocalDate().toString();
+		
+		int horaInt = dataHoraAbertura.toLocalTime().getHour();
+		String hora = String.valueOf(horaInt);
+		
+		int minutoInt = dataHoraAbertura.toLocalTime().getMinute();
+		String minuto = String.valueOf(minutoInt);
+		
+		String dataHoraDesejada = data + hora + minuto;
+		if(numeros.length() > 11) {
+			return id + dataHoraDesejada.replaceAll("\\D","") + cliente.getCpfCnpj();
+		}
+		else {
+			return id + dataHoraDesejada.replaceAll("\\D","") + "000" + cliente.getCpfCnpj();
+		}
+	}
+	@Override
+	public String getId() {
+		return getNumero();
+	}
 }

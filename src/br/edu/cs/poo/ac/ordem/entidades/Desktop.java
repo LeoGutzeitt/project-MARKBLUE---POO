@@ -8,14 +8,18 @@ import lombok.Setter;
 
 public class Desktop extends Equipamento{
 
-    private boolean ehServido;
+	private boolean ehServido;
 
-    public Desktop(String Serial, String descricao, boolean ehNovo, double valorEstimado, boolean ehServido) {
-        super(Serial, descricao, ehNovo, valorEstimado);
-        this.ehServido = ehServido;
-    }
+	public Desktop(String Serial, String descricao, boolean ehNovo, double valorEstimado, boolean ehServido) {
+		super(Serial, descricao, ehNovo, valorEstimado);
+		this.ehServido = ehServido;
+	}
 
-    public String getIdTipo() {
-        return "DE";
-    }
+	public String getIdTipo() {
+		return "DE";
+	}
+
+	public String getId() {
+		return getIdTipo() + super.getSerial();
+	}
 }

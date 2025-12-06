@@ -1,59 +1,36 @@
 package br.edu.cs.poo.ac.ordem.daos;
-
-
-import java.io.Serializable;
-
 import br.edu.cs.poo.ac.ordem.entidades.OrdemServico;
+import br.edu.cs.poo.ac.utils.Registro;
 
 //O identificador único, por objeto, de OrdemServico é o número.
 public class OrdemServicoDAO extends DAOGenerico {
 
-    public OrdemServicoDAO() {
-        super(OrdemServico.class);
-    }
+	public Class<OrdemServico> getClasseEntidade() {
+	    return OrdemServico.class;
+	}
 
-    public OrdemServico buscar(String codigo) {
-        return (OrdemServico)cadastroObjetos.buscar(codigo);
-    }
+	public OrdemServico buscar(String id) {
+		return (OrdemServico) super.buscar(id);
+	}
 
-    public boolean incluir(OrdemServico ordemServico) {
-        if (buscar(ordemServico.getNumero()) == null) {
-            cadastroObjetos.incluir(ordemServico, ordemServico.getNumero());
-            return true;
-        } else {
-            return false;
-        }
-    }
+	public boolean incluir(OrdemServico data) {
+		return super.incluir(data);
+	}
 
-    public boolean alterar(OrdemServico ordemServico) {
-        if (buscar(ordemServico.getNumero()) != null) {
-            cadastroObjetos.alterar(ordemServico, ordemServico.getNumero());
-            return true;
-        } else {
-            return false;
-        }
-    }
+	public boolean alterar(OrdemServico data) {
+		return super.alterar(data);
+	}
 
-    public boolean excluir(String codigo) {
-        if (buscar(codigo) != null) {
-            cadastroObjetos.excluir(codigo);
-            return true;
-        } else {
-            return false;
-        }
-    }
+	public boolean excluir(String id) {
+		return super.excluir(id);
+	}
 
-    public OrdemServico[] buscarTodos() {
-        Serializable[] ret = cadastroObjetos.buscarTodos();
-        OrdemServico[] retorno;
-        if (ret != null && ret.length > 0) {
-            retorno = new OrdemServico[ret.length];
-            for (int i=0; i<ret.length; i++) {
-                retorno[i] = (OrdemServico)ret[i];
-            }
-        } else {
-            retorno = new OrdemServico[0];
-        }
-        return retorno;
-    }
+	public OrdemServico[] buscarTodos() {
+		Registro registros[] = super.buscarTodos();
+		OrdemServico data[] = new OrdemServico[registros.length];
+		for(int i = 0; i < registros.length; i++) {
+			data[i] = (OrdemServico)registros[i];
+		}
+		return data;
+	}
 }

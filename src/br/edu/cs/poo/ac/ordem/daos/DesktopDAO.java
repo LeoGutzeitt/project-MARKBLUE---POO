@@ -1,66 +1,38 @@
 package br.edu.cs.poo.ac.ordem.daos;
 
-import java.io.Serializable;
-
 import br.edu.cs.poo.ac.ordem.entidades.Desktop;
+import br.edu.cs.poo.ac.utils.Registro;
 
 //O identificador único, por objeto, de Desktop é a concatenação do retorno
 //do método getTipo com o atributo serial...
 
 public class DesktopDAO extends DAOGenerico {
-    public DesktopDAO() {
-        super(Desktop.class);
-    }
+	public Class<Desktop> getClasseEntidade() {
+	    return Desktop.class;
+	}
 
-    private String getCodigo(Desktop desktop) {
+	public Desktop buscar(String id) {
+		return (Desktop) super.buscar(id);
+	}
 
-        return desktop.getIdTipo() + desktop.getSerial();
-    }
+	public boolean incluir(Desktop data) {
+		return super.incluir(data);
+	}
 
-    public Desktop buscar(String codigo) {
-        return (Desktop) cadastroObjetos.buscar(codigo);
-    }
+	public boolean alterar(Desktop data) {
+		return super.alterar(data);
+	}
 
-    public boolean incluir(Desktop desktop) {
-        if (buscar(getCodigo(desktop)) == null) {
+	public boolean excluir(String id) {
+		return super.excluir(id);
+	}
 
-            cadastroObjetos.incluir(desktop, getCodigo(desktop));
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean alterar(Desktop desktop) {
-        if (buscar(getCodigo(desktop)) != null) {
-            cadastroObjetos.alterar(desktop, getCodigo(desktop));
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean excluir(String codigo) {
-        if (buscar(codigo) != null) {
-            cadastroObjetos.excluir(codigo);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public Desktop[] buscarTodos() {
-        Serializable[] ret = cadastroObjetos.buscarTodos();
-        Desktop[] retorno;
-        if (ret != null && ret.length > 0) {
-            retorno = new Desktop[ret.length];
-            for (int i = 0; i < ret.length; i++) {
-                retorno[i] = (Desktop) ret[i];
-            }
-        } else {
-            retorno = new Desktop[0];
-        }
-        return retorno;
-    }
-
+	public Desktop[] buscarTodos() {
+		Registro registros[] = super.buscarTodos();
+		Desktop data[] = new Desktop[registros.length];
+		for(int i = 0; i < registros.length; i++) {
+			data[i] = (Desktop)registros[i];
+		}
+		return data;
+	}
 }
