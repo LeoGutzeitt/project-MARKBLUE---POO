@@ -11,6 +11,7 @@ import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.NumberFormat;
+import java.util.Arrays;
 
 public class TelaEquipamento extends JFrame {
 
@@ -152,12 +153,12 @@ public class TelaEquipamento extends JFrame {
         }
         
         if (!resultado.isValidado()) {
-            new TelaMensagemErro(resultado.getMensagensErro());
+            new TelaMensagemErro(Arrays.asList(resultado.getMensagensErro().listar()));
         } else if (resultado.isOperacaoRealizada()) {
             JOptionPane.showMessageDialog(this, "Inclusão realizada com sucesso");
             limparCampos();
         } else {
-            new TelaMensagemErro(resultado.getMensagensErro());
+            new TelaMensagemErro(Arrays.asList(resultado.getMensagensErro().listar()));
         }
     }
 
@@ -173,12 +174,12 @@ public class TelaEquipamento extends JFrame {
         }
         
         if (!resultado.isValidado()) {
-            new TelaMensagemErro(resultado.getMensagensErro());
+            new TelaMensagemErro(Arrays.asList(resultado.getMensagensErro().listar()));
         } else if (resultado.isOperacaoRealizada()) {
             JOptionPane.showMessageDialog(this, "Alteração realizada com sucesso");
             limparCampos();
         } else {
-            new TelaMensagemErro(resultado.getMensagensErro());
+            new TelaMensagemErro(Arrays.asList(resultado.getMensagensErro().listar()));
         }
     }
 
@@ -197,12 +198,12 @@ public class TelaEquipamento extends JFrame {
         }
         
         if (!resultado.isValidado()) {
-            new TelaMensagemErro(resultado.getMensagensErro());
+            new TelaMensagemErro(Arrays.asList(resultado.getMensagensErro().listar()));
         } else if (resultado.isOperacaoRealizada()) {
             JOptionPane.showMessageDialog(this, "Exclusão realizada com sucesso");
             limparCampos();
         } else {
-            new TelaMensagemErro(resultado.getMensagensErro());
+            new TelaMensagemErro(Arrays.asList(resultado.getMensagensErro().listar()));
         }
     }
 
