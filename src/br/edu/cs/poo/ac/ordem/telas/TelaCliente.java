@@ -155,7 +155,7 @@ public class TelaCliente extends JFrame {
             }
 
             Contato contato = new Contato(email, celular, ehZap);
-            Cliente cliente = new Cliente(cpfCnpj, nome, dataCadastro, contato);
+            Cliente cliente = new Cliente(cpfCnpj, nome, contato, dataCadastro);
             return cliente;
 
         } catch (Exception e) {
