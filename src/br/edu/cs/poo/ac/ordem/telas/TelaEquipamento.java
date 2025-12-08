@@ -35,87 +35,122 @@ public class TelaEquipamento extends JFrame {
         mediator = EquipamentoMediator.getInstancia();
 
         setTitle("CRUD de Equipamento");
-        setSize(500, 500);
+        setSize(800, 650);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout());
 
-        // Painel principal
-        JPanel painel = new JPanel(new GridLayout(0, 2, 5, 5));
-        painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ignored) {}
 
-        // === Área de acesso ===
-        painel.add(new JLabel("Tipo:"));
+        getContentPane().setBackground(Color.WHITE);
+        setLayout(new BorderLayout(20, 20));
+
+        // ======== PAINEL DE CAMPOS ========
+        JPanel painelCampos = new JPanel(new GridLayout(0, 2, 10, 15));
+        painelCampos.setBorder(BorderFactory.createEmptyBorder(30, 40, 20, 40));
+        painelCampos.setBackground(Color.WHITE);
+        Font fonteCampo = new Font("Segoe UI", Font.PLAIN, 16);
+
+        // === Tipo ===
+        painelCampos.add(criarLabel("Tipo:"));
         cbTipo = new JComboBox<>(new String[]{"Notebook", "Desktop"});
+        cbTipo.setFont(fonteCampo);
         cbTipo.addActionListener(e -> atualizarCampoOpcional());
-        painel.add(cbTipo);
+        painelCampos.add(cbTipo);
 
-        painel.add(new JLabel("Serial:"));
+        // === Serial ===
+        painelCampos.add(criarLabel("Serial:"));
         txtSerial = new JTextField();
-        painel.add(txtSerial);
+        txtSerial.setFont(fonteCampo);
+        painelCampos.add(txtSerial);
 
-        // === Área de dados ===
-        painel.add(new JLabel("Descrição:"));
+        // === Descrição ===
+        painelCampos.add(criarLabel("Descrição:"));
         txtDescricao = new JTextArea(3, 20);
-        painel.add(new JScrollPane(txtDescricao));
+        txtDescricao.setFont(fonteCampo);
+        txtDescricao.setLineWrap(true);
+        txtDescricao.setWrapStyleWord(true);
+        JScrollPane scrollDesc = new JScrollPane(txtDescricao);
+        scrollDesc.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+        painelCampos.add(scrollDesc);
 
-        painel.add(new JLabel("É novo:"));
+        // === É novo ===
+        painelCampos.add(criarLabel("É novo:"));
         JPanel painelNovo = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        painelNovo.setBackground(Color.WHITE);
         rbNovoSim = new JRadioButton("Sim");
         rbNovoNao = new JRadioButton("Não", true);
+        rbNovoSim.setFont(fonteCampo);
+        rbNovoNao.setFont(fonteCampo);
+        rbNovoSim.setBackground(Color.WHITE);
+        rbNovoNao.setBackground(Color.WHITE);
         grupoNovo = new ButtonGroup();
         grupoNovo.add(rbNovoSim);
         grupoNovo.add(rbNovoNao);
         painelNovo.add(rbNovoSim);
         painelNovo.add(rbNovoNao);
-        painel.add(painelNovo);
+        painelCampos.add(painelNovo);
 
-        painel.add(new JLabel("Valor estimado:"));
+        // === Valor estimado ===
+        painelCampos.add(criarLabel("Valor estimado:"));
         NumberFormat format = NumberFormat.getNumberInstance();
         format.setMaximumFractionDigits(2);
         NumberFormatter formatter = new NumberFormatter(format);
         formatter.setValueClass(Double.class);
         formatter.setAllowsInvalid(false);
         txtValor = new JFormattedTextField(formatter);
-        painel.add(txtValor);
+        txtValor.setFont(fonteCampo);
+        painelCampos.add(txtValor);
 
         // === Campo dinâmico (Notebook ou Desktop) ===
         painelOpcional = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        painelOpcional.setBackground(Color.WHITE);
         lblOpcional = new JLabel("Carrega dados sensíveis:");
+        lblOpcional.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblOpcional.setForeground(new Color(50, 50, 50));
         rbOpcionalNao = new JRadioButton("Não", true);
         rbOpcionalSim = new JRadioButton("Sim");
+        rbOpcionalNao.setFont(fonteCampo);
+        rbOpcionalSim.setFont(fonteCampo);
+        rbOpcionalNao.setBackground(Color.WHITE);
+        rbOpcionalSim.setBackground(Color.WHITE);
         grupoOpcional = new ButtonGroup();
         grupoOpcional.add(rbOpcionalNao);
         grupoOpcional.add(rbOpcionalSim);
         painelOpcional.add(lblOpcional);
         painelOpcional.add(rbOpcionalNao);
         painelOpcional.add(rbOpcionalSim);
-        painel.add(painelOpcional);
+        
+        painelCampos.add(new JLabel());
+        painelCampos.add(painelOpcional);
 
-        add(painel, BorderLayout.CENTER);
+        add(painelCampos, BorderLayout.CENTER);
 
-        // === Botões ===
-        JPanel botoes = new JPanel(new FlowLayout());
-        btnIncluir = new JButton("Incluir");
-        btnAlterar = new JButton("Alterar");
-        btnExcluir = new JButton("Excluir");
-        btnBuscar = new JButton("Buscar");
-        btnNovo = new JButton("Novo");
+        // ======== BOTÕES CENTRALIZADOS ========
+        JPanel painelBotoes = new JPanel(new GridBagLayout());
+        painelBotoes.setBackground(Color.WHITE);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
 
-        botoes.add(btnIncluir);
-        botoes.add(btnAlterar);
-        botoes.add(btnExcluir);
-        botoes.add(btnBuscar);
-        botoes.add(btnNovo);
+        btnIncluir = criarBotao("Incluir", e -> incluir());
+        btnAlterar = criarBotao("Alterar", e -> alterar());
+        btnExcluir = criarBotao("Excluir", e -> excluir());
+        btnBuscar = criarBotao("Buscar", e -> buscar());
+        btnNovo = criarBotao("Novo", e -> limparCampos());
 
-        add(botoes, BorderLayout.SOUTH);
+        gbc.gridx = 0; gbc.gridy = 0;
+        painelBotoes.add(btnIncluir, gbc);
+        gbc.gridx = 1;
+        painelBotoes.add(btnAlterar, gbc);
+        gbc.gridx = 2;
+        painelBotoes.add(btnExcluir, gbc);
+        gbc.gridx = 3;
+        painelBotoes.add(btnBuscar, gbc);
+        gbc.gridx = 4;
+        painelBotoes.add(btnNovo, gbc);
 
-        // === Ações dos botões ===
-        btnIncluir.addActionListener(e -> incluir());
-        btnAlterar.addActionListener(e -> alterar());
-        btnExcluir.addActionListener(e -> excluir());
-        btnBuscar.addActionListener(e -> buscar());
-        btnNovo.addActionListener(e -> limparCampos());
+        add(painelBotoes, BorderLayout.SOUTH);
 
         setVisible(true);
     }
@@ -126,6 +161,13 @@ public class TelaEquipamento extends JFrame {
         grupoOpcional = new ButtonGroup();
         rbOpcionalNao = new JRadioButton("Não", true);
         rbOpcionalSim = new JRadioButton("Sim");
+        
+        Font fonteCampo = new Font("Segoe UI", Font.PLAIN, 16);
+        rbOpcionalNao.setFont(fonteCampo);
+        rbOpcionalSim.setFont(fonteCampo);
+        rbOpcionalNao.setBackground(Color.WHITE);
+        rbOpcionalSim.setBackground(Color.WHITE);
+        
         grupoOpcional.add(rbOpcionalNao);
         grupoOpcional.add(rbOpcionalSim);
 
@@ -139,6 +181,39 @@ public class TelaEquipamento extends JFrame {
         painelOpcional.add(rbOpcionalSim);
         painelOpcional.revalidate();
         painelOpcional.repaint();
+    }
+
+    private JLabel criarLabel(String texto) {
+        JLabel lbl = new JLabel(texto, SwingConstants.RIGHT);
+        lbl.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lbl.setForeground(new Color(50, 50, 50));
+        return lbl;
+    }
+
+    private JButton criarBotao(String texto, java.awt.event.ActionListener acao) {
+        JButton botao = new JButton(texto);
+        botao.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        botao.setBackground(Color.WHITE);
+        botao.setForeground(new Color(0, 100, 180));
+        botao.setFocusPainted(false);
+        botao.setPreferredSize(new Dimension(140, 60));
+        botao.setBorder(BorderFactory.createLineBorder(new Color(0, 120, 215), 2));
+        botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        // Efeito hover
+        botao.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent evt) {
+                botao.setBackground(new Color(0, 120, 215));
+                botao.setForeground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent evt) {
+                botao.setBackground(Color.WHITE);
+                botao.setForeground(new Color(0, 100, 180));
+            }
+        });
+        
+        botao.addActionListener(acao);
+        return botao;
     }
 
     private void incluir() {
