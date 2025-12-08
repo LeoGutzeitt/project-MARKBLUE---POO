@@ -71,11 +71,11 @@ public class OrdemServicoGUI extends JFrame {
 		estilizarCampo(tfCliente);
 		pFormInclusao.add(tfCliente);
 
-		pFormInclusao.add(criarLabel("Preço Base (1-4):"));
+		pFormInclusao.add(criarLabel("Código Preço Base (1-4):"));
 		estilizarCampo(tfPrecoBase);
 		pFormInclusao.add(tfPrecoBase);
 
-		pFormInclusao.add(criarLabel("Equipamento ID:"));
+		pFormInclusao.add(criarLabel("ID Equipamento (ex: DE123, NO456):"));
 		estilizarCampo(tfEquipamento);
 		pFormInclusao.add(tfEquipamento);
 
