@@ -265,24 +265,27 @@ public class OrdemServicoGUI extends JFrame {
 	private JButton criarBotao(String texto, java.awt.event.ActionListener acao) {
 		JButton botao = new JButton(texto);
 		botao.setFont(new Font("Segoe UI", Font.BOLD, 15));
-		botao.setBackground(new Color(0, 120, 215));
-		botao.setForeground(Color.WHITE);
+		botao.setBackground(Color.WHITE);
+		botao.setForeground(new Color(0, 100, 180));
 		botao.setFocusPainted(false);
 		botao.setPreferredSize(new Dimension(200, 50));
 		botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		botao.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+		botao.setBorder(BorderFactory.createLineBorder(new Color(0, 120, 215), 2));
 		
 		// Efeito hover
 		botao.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseEntered(java.awt.event.MouseEvent evt) {
-				botao.setBackground(new Color(0, 100, 180));
+				botao.setBackground(new Color(0, 120, 215));
+				botao.setForeground(Color.WHITE);
 			}
 			public void mouseExited(java.awt.event.MouseEvent evt) {
-				botao.setBackground(new Color(0, 120, 215));
+				botao.setBackground(Color.WHITE);
+				botao.setForeground(new Color(0, 100, 180));
 			}
 		});
 		
 		botao.addActionListener(acao);
+		System.out.println("DEBUG: Botão criado: " + texto + " - Listener adicionado");
 		return botao;
 	}
 
@@ -296,6 +299,7 @@ public class OrdemServicoGUI extends JFrame {
 
 	private void onIncluir(ActionEvent e) {
 		try {
+			System.out.println("DEBUG: Botão Incluir clicado!");
 			log("\n" + "=".repeat(60));
 			logInfo("Iniciando inclusão de nova ordem...");
 			
@@ -466,7 +470,7 @@ public class OrdemServicoGUI extends JFrame {
 				log("⚙️  Equipamento: " + (ordem.getEquipamento() != null ? ordem.getEquipamento().getId() : "N/A"));
 				log("📊 Status: " + ordem.getStatus());
 				log("💰 Valor: R$ " + String.format("%.2f", ordem.getValor()));
-				log("⏱️  Prazo: " + ordem.getPrazo() + " dias");
+				log("⏱️  Prazo: " + ordem.getPrazoEmDias() + " dias");
 				log("👨‍💼 Vendedor: " + ordem.getVendedor());
 				log("📅 Abertura: " + ordem.getDataHoraAbertura());
 				if (ordem.getMotivoCancelamento() != null) {
