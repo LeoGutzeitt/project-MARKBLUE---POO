@@ -21,13 +21,10 @@ public class OrdemServicoGUI extends JFrame {
 	private final JTextField tfCliente = new JTextField(15);
 	private final JTextField tfPrecoBase = new JTextField(10);
 	private final JTextField tfEquipamento = new JTextField(10);
-	private final JTextField tfPrazo = new JTextField(4);
-	private final JTextField tfValor = new JTextField(8);
 	private final JTextField tfVendedor = new JTextField(12);
 
 	private final JTextField tfNumero = new JTextField(20);
 	private final JTextField tfMotivo = new JTextField(20);
-	private final JTextField tfValorFinal = new JTextField(8);
 	private final JTextArea taRelatorioFinal = new JTextArea(3, 20);
 	private final JCheckBox cbPago = new JCheckBox("Pago");
 	private final JTextField tfDataFechamento = new JTextField(10);
@@ -297,13 +294,6 @@ public class OrdemServicoGUI extends JFrame {
 		));
 	}
 
-	private void addLabelAnd(GridBagConstraints c, JPanel p, String label, JComponent comp, int row) {
-		c.gridx = 0; c.gridy = row; c.gridwidth = 1;
-		p.add(new JLabel(label), c);
-		c.gridx = 1; c.gridy = row; c.gridwidth = 2;
-		p.add(comp, c);
-	}
-
 	private void onIncluir(ActionEvent e) {
 		try {
 			log("\n" + "=".repeat(60));
@@ -324,7 +314,7 @@ public class OrdemServicoGUI extends JFrame {
 			DadosOrdemServico dados = new DadosOrdemServico(cliente, codigoPrecoBase, equipamento, vendedor);
 			ResultadoMediator resultado = mediator.incluir(dados);
 			
-			if (resultado.isValido() && resultado.isRealizado()) {
+			if (resultado.isValidado() && resultado.isOperacaoRealizada()) {
 				logSucesso("Ordem incluída com sucesso!");
 				logInfo("Cliente: " + cliente);
 				logInfo("Equipamento: " + equipamento);
@@ -336,15 +326,15 @@ public class OrdemServicoGUI extends JFrame {
 				tfVendedor.setText("");
 			} else {
 				logErro("Falha ao incluir ordem:");
-				for (int i = 0; i < resultado.getErros().tamanho(); i++) {
-					log("   • " + resultado.getErros().buscar(i));
+				for (int i = 0; i < resultado.getMensagensErro().tamanho(); i++) {
+					log("   • " + resultado.getMensagensErro().buscar(i));
 				}
 			}
 		} catch (ExcecaoNegocio ex) {
 			logErro("Erro de negócio ao incluir:");
 			ResultadoMediator resultado = (ResultadoMediator) ex.getResultado();
-			for (int i = 0; i < resultado.getErros().tamanho(); i++) {
-				log("   • " + resultado.getErros().buscar(i));
+			for (int i = 0; i < resultado.getMensagensErro().tamanho(); i++) {
+				log("   • " + resultado.getMensagensErro().buscar(i));
 			}
 		} catch (NumberFormatException ex) {
 			logErro("Código de preço base deve ser um número inteiro (1-4).");
@@ -373,21 +363,21 @@ public class OrdemServicoGUI extends JFrame {
 			
 			ResultadoMediator resultado = mediator.cancelar(numero, motivo, LocalDateTime.now());
 			
-			if (resultado.isValido() && resultado.isRealizado()) {
+			if (resultado.isValidado() && resultado.isOperacaoRealizada()) {
 				logSucesso("Ordem " + numero + " cancelada com sucesso!");
 				logInfo("Motivo: " + motivo);
 				tfMotivo.setText("");
 			} else {
 				logErro("Falha ao cancelar ordem:");
-				for (int i = 0; i < resultado.getErros().tamanho(); i++) {
-					log("   • " + resultado.getErros().buscar(i));
+				for (int i = 0; i < resultado.getMensagensErro().tamanho(); i++) {
+					log("   • " + resultado.getMensagensErro().buscar(i));
 				}
 			}
 		} catch (ExcecaoNegocio ex) {
 			logErro("Erro de negócio ao cancelar:");
 			ResultadoMediator resultado = (ResultadoMediator) ex.getResultado();
-			for (int i = 0; i < resultado.getErros().tamanho(); i++) {
-				log("   • " + resultado.getErros().buscar(i));
+			for (int i = 0; i < resultado.getMensagensErro().tamanho(); i++) {
+				log("   • " + resultado.getMensagensErro().buscar(i));
 			}
 		} catch (Exception ex) {
 			logErro("Erro inesperado: " + ex.getMessage());
@@ -426,7 +416,7 @@ public class OrdemServicoGUI extends JFrame {
 			
 			ResultadoMediator resultado = mediator.fechar(fechamento);
 			
-			if (resultado.isValido() && resultado.isRealizado()) {
+			if (resultado.isValidado() && resultado.isOperacaoRealizada()) {
 				logSucesso("Ordem " + numero + " fechada com sucesso!");
 				logInfo("Data: " + dataFechamento);
 				logInfo("Status Pagamento: " + (pago ? "Pago" : "Não Pago"));
@@ -437,15 +427,15 @@ public class OrdemServicoGUI extends JFrame {
 				cbPago.setSelected(false);
 			} else {
 				logErro("Falha ao fechar ordem:");
-				for (int i = 0; i < resultado.getErros().tamanho(); i++) {
-					log("   • " + resultado.getErros().buscar(i));
+				for (int i = 0; i < resultado.getMensagensErro().tamanho(); i++) {
+					log("   • " + resultado.getMensagensErro().buscar(i));
 				}
 			}
 		} catch (ExcecaoNegocio ex) {
 			logErro("Erro de negócio ao fechar:");
 			ResultadoMediator resultado = (ResultadoMediator) ex.getResultado();
-			for (int i = 0; i < resultado.getErros().tamanho(); i++) {
-				log("   • " + resultado.getErros().buscar(i));
+			for (int i = 0; i < resultado.getMensagensErro().tamanho(); i++) {
+				log("   • " + resultado.getMensagensErro().buscar(i));
 			}
 		} catch (Exception ex) {
 			logErro("Erro ao processar fechamento: " + ex.getMessage());
