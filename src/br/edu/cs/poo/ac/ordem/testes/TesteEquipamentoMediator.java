@@ -16,6 +16,7 @@ import br.edu.cs.poo.ac.ordem.mediators.DadosEquipamento;
 import br.edu.cs.poo.ac.ordem.mediators.EquipamentoMediator;
 import br.edu.cs.poo.ac.ordem.mediators.ResultadoMediator;
 import br.edu.cs.poo.ac.utils.ListaString;
+import br.edu.cs.poo.ac.ordem.testes.unidade2.primeiraentrega.ComparadoraObjetosSerial;
 
 public class TesteEquipamentoMediator extends TesteAbstrato {
     private static final String SERIAL_DO_NOTEBOOK_NAO_EXISTENTE = "Serial do notebook não existente";
