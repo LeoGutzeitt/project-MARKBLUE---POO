@@ -332,7 +332,7 @@ public class OrdemServicoGUI extends JFrame {
 			}
 		} catch (ExcecaoNegocio ex) {
 			logErro("Erro de negócio ao incluir:");
-			ResultadoMediator resultado = (ResultadoMediator) ex.getResultado();
+			ResultadoMediator resultado = ex.getRes();
 			for (int i = 0; i < resultado.getMensagensErro().tamanho(); i++) {
 				log("   • " + resultado.getMensagensErro().buscar(i));
 			}
@@ -375,7 +375,7 @@ public class OrdemServicoGUI extends JFrame {
 			}
 		} catch (ExcecaoNegocio ex) {
 			logErro("Erro de negócio ao cancelar:");
-			ResultadoMediator resultado = (ResultadoMediator) ex.getResultado();
+			ResultadoMediator resultado = ex.getRes();
 			for (int i = 0; i < resultado.getMensagensErro().tamanho(); i++) {
 				log("   • " + resultado.getMensagensErro().buscar(i));
 			}
@@ -433,7 +433,7 @@ public class OrdemServicoGUI extends JFrame {
 			}
 		} catch (ExcecaoNegocio ex) {
 			logErro("Erro de negócio ao fechar:");
-			ResultadoMediator resultado = (ResultadoMediator) ex.getResultado();
+			ResultadoMediator resultado = ex.getRes();
 			for (int i = 0; i < resultado.getMensagensErro().tamanho(); i++) {
 				log("   • " + resultado.getMensagensErro().buscar(i));
 			}
