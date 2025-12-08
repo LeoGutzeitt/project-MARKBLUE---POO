@@ -110,19 +110,178 @@ public class TelaCliente extends JFrame {
     private JButton criarBotao(String texto, java.awt.event.ActionListener acao) {
         JButton botao = new JButton(texto);
         botao.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        botao.setBackground(new Color(0, 120, 215));
-        botao.setForeground(Color.BLUE);
+        botao.setBackground(Color.WHITE);
+        botao.setForeground(new Color(0, 100, 180));
         botao.setFocusPainted(false);
         botao.setPreferredSize(new Dimension(180, 60));
+        botao.setBorder(BorderFactory.createLineBorder(new Color(0, 120, 215), 2));
+        botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        // Efeito hover
+        botao.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent evt) {
+                botao.setBackground(new Color(0, 120, 215));
+                botao.setForeground(Color.WHITE);
+            }
+            public void mouseExited(MouseEvent evt) {
+                botao.setBackground(Color.WHITE);
+                botao.setForeground(new Color(0, 100, 180));
+            }
+        });
+        
         botao.addActionListener(acao);
         return botao;
     }
 
-    // ======== MÉTODOS CRUD (mesma lógica anterior) ========
-    private Cliente criarCliente() { /* ... mesma lógica ... */ return null; }
-    private void incluir() { /* ... */ }
-    private void alterar() { /* ... */ }
-    private void excluir() { /* ... */ }
-    private void buscar() { /* ... */ }
-    private void limparCampos() { /* ... */ }
+    private Cliente criarCliente() {
+        try {
+            String cpfCnpj = txtCpfCnpj.getText().trim();
+            String nome = txtNome.getText().trim();
+            String email = txtEmail.getText().trim();
+            String celular = txtCelular.getText().trim();
+            boolean ehZap = chkZap.isSelected();
+            String dataTexto = txtData.getText().trim();
+
+            if (cpfCnpj.isEmpty() || nome.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "CPF/CNPJ e Nome são obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+
+            // Parse data
+            LocalDate dataCadastro = LocalDate.now();
+            if (!dataTexto.isEmpty() && !dataTexto.contains("_")) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                dataCadastro = LocalDate.parse(dataTexto, formatter);
+            }
+
+            Contato contato = new Contato(email, celular, ehZap);
+            Cliente cliente = new Cliente(cpfCnpj, nome, dataCadastro, contato);
+            return cliente;
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao criar cliente: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+
+    private void incluir() {
+        try {
+            Cliente cliente = criarCliente();
+            if (cliente == null) return;
+
+            ResultadoMediator resultado = mediator.incluir(cliente);
+            
+            if (resultado.isValidado() && resultado.isOperacaoRealizada()) {
+                JOptionPane.showMessageDialog(this, "Cliente incluído com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                limparCampos();
+            } else {
+                StringBuilder erros = new StringBuilder("Erros:\n");
+                for (int i = 0; i < resultado.getMensagensErro().tamanho(); i++) {
+                    erros.append("• ").append(resultado.getMensagensErro().buscar(i)).append("\n");
+                }
+                JOptionPane.showMessageDialog(this, erros.toString(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao incluir cliente: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    private void alterar() {
+        try {
+            Cliente cliente = criarCliente();
+            if (cliente == null) return;
+
+            ResultadoMediator resultado = mediator.alterar(cliente);
+            
+            if (resultado.isValidado() && resultado.isOperacaoRealizada()) {
+                JOptionPane.showMessageDialog(this, "Cliente alterado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                limparCampos();
+            } else {
+                StringBuilder erros = new StringBuilder("Erros:\n");
+                for (int i = 0; i < resultado.getMensagensErro().tamanho(); i++) {
+                    erros.append("• ").append(resultado.getMensagensErro().buscar(i)).append("\n");
+                }
+                JOptionPane.showMessageDialog(this, erros.toString(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao alterar cliente: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    private void excluir() {
+        try {
+            String cpfCnpj = txtCpfCnpj.getText().trim();
+            
+            if (cpfCnpj.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Informe o CPF/CNPJ do cliente para excluir!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int confirmacao = JOptionPane.showConfirmDialog(this, 
+                "Tem certeza que deseja excluir o cliente " + cpfCnpj + "?", 
+                "Confirmação", JOptionPane.YES_NO_OPTION);
+            
+            if (confirmacao != JOptionPane.YES_OPTION) return;
+
+            ResultadoMediator resultado = mediator.excluir(cpfCnpj);
+            
+            if (resultado.isValidado() && resultado.isOperacaoRealizada()) {
+                JOptionPane.showMessageDialog(this, "Cliente excluído com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                limparCampos();
+            } else {
+                StringBuilder erros = new StringBuilder("Erros:\n");
+                for (int i = 0; i < resultado.getMensagensErro().tamanho(); i++) {
+                    erros.append("• ").append(resultado.getMensagensErro().buscar(i)).append("\n");
+                }
+                JOptionPane.showMessageDialog(this, erros.toString(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao excluir cliente: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    private void buscar() {
+        try {
+            String cpfCnpj = txtCpfCnpj.getText().trim();
+            
+            if (cpfCnpj.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Informe o CPF/CNPJ para buscar!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Cliente cliente = mediator.buscar(cpfCnpj);
+            
+            if (cliente != null) {
+                txtNome.setText(cliente.getNome());
+                txtEmail.setText(cliente.getContato() != null ? cliente.getContato().getEmail() : "");
+                txtCelular.setText(cliente.getContato() != null ? cliente.getContato().getCelular() : "");
+                chkZap.setSelected(cliente.getContato() != null && cliente.getContato().isEhZap());
+                
+                if (cliente.getDataCadastro() != null) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    txtData.setText(cliente.getDataCadastro().format(formatter));
+                }
+                
+                JOptionPane.showMessageDialog(this, "Cliente encontrado!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Cliente não encontrado!", "Aviso", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao buscar cliente: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    private void limparCampos() {
+        txtCpfCnpj.setText("");
+        txtNome.setText("");
+        txtEmail.setText("");
+        txtCelular.setText("");
+        txtData.setText("");
+        chkZap.setSelected(false);
+        txtCpfCnpj.requestFocus();
+    }
 }
