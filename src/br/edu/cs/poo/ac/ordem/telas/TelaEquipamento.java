@@ -1,184 +1,285 @@
 package br.edu.cs.poo.ac.ordem.telas;
 
-import javax.swing.*;
-import java.awt.*;
-import br.edu.cs.poo.ac.ordem.entidades.Desktop;
-import br.edu.cs.poo.ac.ordem.entidades.Notebook;
 import br.edu.cs.poo.ac.ordem.mediators.EquipamentoMediator;
 import br.edu.cs.poo.ac.ordem.mediators.ResultadoMediator;
+import br.edu.cs.poo.ac.ordem.entidades.Desktop;
+import br.edu.cs.poo.ac.ordem.entidades.Notebook;
+import br.edu.cs.poo.ac.ordem.entidades.Equipamento;
+
+import javax.swing.*;
+import javax.swing.text.NumberFormatter;
+import java.awt.*;
+import java.awt.event.*;
+import java.text.NumberFormat;
 
 public class TelaEquipamento extends JFrame {
-    private JComboBox<String> comboTipo;
-    private JTextField txtSerial, txtValor;
+
+    private EquipamentoMediator mediator;
+
+    private JComboBox<String> cbTipo;
+    private JTextField txtSerial;
     private JTextArea txtDescricao;
-    private JRadioButton rbNovoSim, rbNovoNao, rbExtraSim, rbExtraNao;
-    private JPanel painelExtra;
-    private EquipamentoMediator mediator = EquipamentoMediator.getInstancia();
+
+    private JRadioButton rbNovoSim, rbNovoNao;
+    private JFormattedTextField txtValor;
+    private JPanel painelOpcional;
+    private ButtonGroup grupoNovo, grupoOpcional;
+
+    private JButton btnIncluir, btnAlterar, btnExcluir, btnBuscar, btnNovo;
+
+    private JRadioButton rbOpcionalSim, rbOpcionalNao;
+    private JLabel lblOpcional;
 
     public TelaEquipamento() {
-        setTitle("CRUD Equipamento");
-        setSize(800, 600);
+        mediator = EquipamentoMediator.getInstancia();
+
+        setTitle("CRUD de Equipamento");
+        setSize(500, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ignored) {}
+        // Painel principal
+        JPanel painel = new JPanel(new GridLayout(0, 2, 5, 5));
+        painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        getContentPane().setBackground(Color.WHITE);
-        setLayout(new BorderLayout(20, 20));
+        // === Área de acesso ===
+        painel.add(new JLabel("Tipo:"));
+        cbTipo = new JComboBox<>(new String[]{"Notebook", "Desktop"});
+        cbTipo.addActionListener(e -> atualizarCampoOpcional());
+        painel.add(cbTipo);
 
-        // ======== PAINEL DE CAMPOS ========
-        JPanel painelCampos = new JPanel(new GridLayout(0, 2, 10, 15));
-        painelCampos.setBorder(BorderFactory.createEmptyBorder(30, 40, 20, 40));
-        painelCampos.setBackground(Color.WHITE);
-        Font fonteCampo = new Font("Segoe UI", Font.PLAIN, 16);
-
-        // Tipo
-        painelCampos.add(criarLabel("Tipo:"));
-        comboTipo = new JComboBox<>(new String[]{"Notebook", "Desktop"});
-        comboTipo.setFont(fonteCampo);
-        painelCampos.add(comboTipo);
-
-        // Serial
-        painelCampos.add(criarLabel("Serial:"));
+        painel.add(new JLabel("Serial:"));
         txtSerial = new JTextField();
-        txtSerial.setFont(fonteCampo);
-        painelCampos.add(txtSerial);
+        painel.add(txtSerial);
 
-        // Descrição
-        painelCampos.add(criarLabel("Descrição:"));
+        // === Área de dados ===
+        painel.add(new JLabel("Descrição:"));
         txtDescricao = new JTextArea(3, 20);
-        txtDescricao.setFont(fonteCampo);
-        txtDescricao.setLineWrap(true);
-        txtDescricao.setWrapStyleWord(true);
-        painelCampos.add(new JScrollPane(txtDescricao));
+        painel.add(new JScrollPane(txtDescricao));
 
-        // É novo
-        painelCampos.add(criarLabel("É novo:"));
+        painel.add(new JLabel("É novo:"));
         JPanel painelNovo = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        painelNovo.setBackground(Color.WHITE);
-        ButtonGroup grupoNovo = new ButtonGroup();
-        rbNovoNao = new JRadioButton("Não", true);
         rbNovoSim = new JRadioButton("Sim");
-        rbNovoNao.setFont(fonteCampo);
-        rbNovoSim.setFont(fonteCampo);
-        grupoNovo.add(rbNovoNao);
+        rbNovoNao = new JRadioButton("Não", true);
+        grupoNovo = new ButtonGroup();
         grupoNovo.add(rbNovoSim);
-        painelNovo.add(rbNovoNao);
+        grupoNovo.add(rbNovoNao);
         painelNovo.add(rbNovoSim);
-        painelCampos.add(painelNovo);
+        painelNovo.add(rbNovoNao);
+        painel.add(painelNovo);
 
-        // Valor
-        painelCampos.add(criarLabel("Valor estimado (R$):"));
-        txtValor = new JTextField();
-        txtValor.setFont(fonteCampo);
-        painelCampos.add(txtValor);
+        painel.add(new JLabel("Valor estimado:"));
+        NumberFormat format = NumberFormat.getNumberInstance();
+        format.setMaximumFractionDigits(2);
+        NumberFormatter formatter = new NumberFormatter(format);
+        formatter.setValueClass(Double.class);
+        formatter.setAllowsInvalid(false);
+        txtValor = new JFormattedTextField(formatter);
+        painel.add(txtValor);
 
-        // Extra
-        painelCampos.add(criarLabel("Opção adicional:"));
-        painelExtra = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        painelExtra.setBackground(Color.WHITE);
-        atualizarExtra();
-        painelCampos.add(painelExtra);
+        // === Campo dinâmico (Notebook ou Desktop) ===
+        painelOpcional = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        lblOpcional = new JLabel("Carrega dados sensíveis:");
+        rbOpcionalNao = new JRadioButton("Não", true);
+        rbOpcionalSim = new JRadioButton("Sim");
+        grupoOpcional = new ButtonGroup();
+        grupoOpcional.add(rbOpcionalNao);
+        grupoOpcional.add(rbOpcionalSim);
+        painelOpcional.add(lblOpcional);
+        painelOpcional.add(rbOpcionalNao);
+        painelOpcional.add(rbOpcionalSim);
+        painel.add(painelOpcional);
 
-        comboTipo.addActionListener(e -> atualizarExtra());
+        add(painel, BorderLayout.CENTER);
 
-        // ======== PAINEL DE BOTÕES CENTRALIZADOS ========
-        JPanel painelBotoes = new JPanel(new GridBagLayout());
-        painelBotoes.setBackground(Color.WHITE);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        // === Botões ===
+        JPanel botoes = new JPanel(new FlowLayout());
+        btnIncluir = new JButton("Incluir");
+        btnAlterar = new JButton("Alterar");
+        btnExcluir = new JButton("Excluir");
+        btnBuscar = new JButton("Buscar");
+        btnNovo = new JButton("Novo");
 
-        JButton btnIncluir = criarBotao("Incluir", e -> incluir());
-        JButton btnAlterar = criarBotao("Alterar", e -> alterar());
-        JButton btnExcluir = criarBotao("Excluir", e -> excluir());
-        JButton btnBuscar = criarBotao("Buscar", e -> buscar());
-        JButton btnLimpar = criarBotao("Limpar Campos", e -> limparCampos());
-        JButton btnSair = criarBotao("Sair", e -> dispose());
+        botoes.add(btnIncluir);
+        botoes.add(btnAlterar);
+        botoes.add(btnExcluir);
+        botoes.add(btnBuscar);
+        botoes.add(btnNovo);
 
-        JPanel gridBotoes = new JPanel(new GridLayout(2, 3, 20, 20));
-        gridBotoes.setBackground(Color.WHITE);
-        gridBotoes.add(btnIncluir);
-        gridBotoes.add(btnAlterar);
-        gridBotoes.add(btnExcluir);
-        gridBotoes.add(btnBuscar);
-        gridBotoes.add(btnLimpar);
-        gridBotoes.add(btnSair);
+        add(botoes, BorderLayout.SOUTH);
 
-        painelBotoes.add(gridBotoes, gbc);
-
-        add(painelCampos, BorderLayout.CENTER);
-        add(painelBotoes, BorderLayout.SOUTH);
+        // === Ações dos botões ===
+        btnIncluir.addActionListener(e -> incluir());
+        btnAlterar.addActionListener(e -> alterar());
+        btnExcluir.addActionListener(e -> excluir());
+        btnBuscar.addActionListener(e -> buscar());
+        btnNovo.addActionListener(e -> limparCampos());
 
         setVisible(true);
     }
 
-    private JLabel criarLabel(String texto) {
-        JLabel lbl = new JLabel(texto, SwingConstants.RIGHT);
-        lbl.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        lbl.setForeground(new Color(50, 50, 50));
-        return lbl;
+    private void atualizarCampoOpcional() {
+        String tipo = (String) cbTipo.getSelectedItem();
+        painelOpcional.removeAll();
+        grupoOpcional = new ButtonGroup();
+        rbOpcionalNao = new JRadioButton("Não", true);
+        rbOpcionalSim = new JRadioButton("Sim");
+        grupoOpcional.add(rbOpcionalNao);
+        grupoOpcional.add(rbOpcionalSim);
+
+        if ("Notebook".equals(tipo)) {
+            lblOpcional.setText("Carrega dados sensíveis:");
+        } else {
+            lblOpcional.setText("É servidor:");
+        }
+        painelOpcional.add(lblOpcional);
+        painelOpcional.add(rbOpcionalNao);
+        painelOpcional.add(rbOpcionalSim);
+        painelOpcional.revalidate();
+        painelOpcional.repaint();
     }
 
-    private JButton criarBotao(String texto, java.awt.event.ActionListener acao) {
-        JButton botao = new JButton(texto);
-        botao.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        botao.setBackground(new Color(0, 120, 215));
-        botao.setForeground(Color.BLUE);
-        botao.setFocusPainted(false);
-        botao.setPreferredSize(new Dimension(180, 60));
-        botao.addActionListener(acao);
-        return botao;
+    private void incluir() {
+        System.out.println("[DEBUG] Botão Incluir clicado");
+        Equipamento eq = criarEquipamento();
+        ResultadoMediator resultado;
+        
+        if (eq instanceof Notebook) {
+            resultado = mediator.incluirNotebook((Notebook) eq);
+        } else {
+            resultado = mediator.incluirDesktop((Desktop) eq);
+        }
+        
+        if (!resultado.isValidado()) {
+            new TelaMensagemErro(resultado.getMensagensErro());
+        } else if (resultado.isOperacaoRealizada()) {
+            JOptionPane.showMessageDialog(this, "Inclusão realizada com sucesso");
+            limparCampos();
+        } else {
+            new TelaMensagemErro(resultado.getMensagensErro());
+        }
     }
 
-    private void atualizarExtra() {
-        painelExtra.removeAll();
-        painelExtra.setLayout(new FlowLayout(FlowLayout.LEFT));
-
-        // Define o texto do rótulo dependendo do tipo selecionado
-        String textoLabel = comboTipo.getSelectedItem().equals("Notebook")
-                ? "Carrega dados sensíveis:"
-                : "É Servidor:";
-
-        // Cria o rótulo separado
-        JLabel lblExtra = new JLabel(textoLabel);
-        lblExtra.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        lblExtra.setForeground(new Color(50, 50, 50));
-
-        // Cria os botões de rádio
-        rbExtraNao = new JRadioButton("NÃO", true);
-        rbExtraSim = new JRadioButton("SIM");
-        rbExtraNao.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        rbExtraSim.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        rbExtraNao.setBackground(Color.WHITE);
-        rbExtraSim.setBackground(Color.WHITE);
-
-        // Agrupa os botões
-        ButtonGroup grupoExtra = new ButtonGroup();
-        grupoExtra.add(rbExtraNao);
-        grupoExtra.add(rbExtraSim);
-
-        // Adiciona tudo no painel de forma ordenada
-        painelExtra.add(lblExtra);
-        painelExtra.add(rbExtraNao);
-        painelExtra.add(rbExtraSim);
-
-        painelExtra.revalidate();
-        painelExtra.repaint();
+    private void alterar() {
+        System.out.println("[DEBUG] Botão Alterar clicado");
+        Equipamento eq = criarEquipamento();
+        ResultadoMediator resultado;
+        
+        if (eq instanceof Notebook) {
+            resultado = mediator.alterarNotebook((Notebook) eq);
+        } else {
+            resultado = mediator.alterarDesktop((Desktop) eq);
+        }
+        
+        if (!resultado.isValidado()) {
+            new TelaMensagemErro(resultado.getMensagensErro());
+        } else if (resultado.isOperacaoRealizada()) {
+            JOptionPane.showMessageDialog(this, "Alteração realizada com sucesso");
+            limparCampos();
+        } else {
+            new TelaMensagemErro(resultado.getMensagensErro());
+        }
     }
 
+    private void excluir() {
+        System.out.println("[DEBUG] Botão Excluir clicado");
+        String tipo = (String) cbTipo.getSelectedItem();
+        String serial = txtSerial.getText();
+        String idTipo = "Notebook".equals(tipo) ? "NO" : "DE";
+        String id = idTipo + serial;
+        
+        ResultadoMediator resultado;
+        if ("Notebook".equals(tipo)) {
+            resultado = mediator.excluirNotebook(id);
+        } else {
+            resultado = mediator.excluirDesktop(id);
+        }
+        
+        if (!resultado.isValidado()) {
+            new TelaMensagemErro(resultado.getMensagensErro());
+        } else if (resultado.isOperacaoRealizada()) {
+            JOptionPane.showMessageDialog(this, "Exclusão realizada com sucesso");
+            limparCampos();
+        } else {
+            new TelaMensagemErro(resultado.getMensagensErro());
+        }
+    }
 
-    // Métodos CRUD originais
-    private void incluir() { /* ... mantém a lógica original ... */ }
-    private void alterar() { /* ... mantém a lógica original ... */ }
-    private void excluir() { /* ... mantém a lógica original ... */ }
-    private void buscar()  { /* ... mantém a lógica original ... */ }
+    private void buscar() {
+        System.out.println("[DEBUG] Botão Buscar clicado");
+        String tipo = (String) cbTipo.getSelectedItem();
+        String serial = txtSerial.getText();
+        String idTipo = "Notebook".equals(tipo) ? "NO" : "DE";
+        String id = idTipo + serial;
+        
+        Equipamento eq;
+        if ("Notebook".equals(tipo)) {
+            eq = mediator.buscarNotebook(id);
+        } else {
+            eq = mediator.buscarDesktop(id);
+        }
+        
+        if (eq != null) {
+            preencherCampos(eq);
+            JOptionPane.showMessageDialog(this, "Equipamento encontrado");
+        } else {
+            JOptionPane.showMessageDialog(this, "Equipamento não encontrado");
+        }
+    }
+
     private void limparCampos() {
+        cbTipo.setSelectedIndex(0);
         txtSerial.setText("");
         txtDescricao.setText("");
-        txtValor.setText("");
         rbNovoNao.setSelected(true);
-        rbExtraNao.setSelected(true);
+        txtValor.setValue(null);
+        rbOpcionalNao.setSelected(true);
+        atualizarCampoOpcional();
+    }
+
+    private Equipamento criarEquipamento() {
+        String tipo = (String) cbTipo.getSelectedItem();
+        String serial = txtSerial.getText();
+        String descricao = txtDescricao.getText();
+        boolean eNovo = rbNovoSim.isSelected();
+        double valor = txtValor.getValue() != null ? ((Number) txtValor.getValue()).doubleValue() : 0.0;
+        boolean opcionalSim = rbOpcionalSim.isSelected();
+
+        Equipamento eq;
+        if ("Notebook".equals(tipo)) {
+            eq = new Notebook(serial, descricao, eNovo, valor, opcionalSim);
+        } else {
+            eq = new Desktop(serial, descricao, eNovo, valor, opcionalSim);
+        }
+
+        return eq;
+    }
+
+    private void preencherCampos(Equipamento eq) {
+        // Determinar tipo baseado na instância
+        if (eq instanceof Notebook) {
+            cbTipo.setSelectedItem("Notebook");
+        } else {
+            cbTipo.setSelectedItem("Desktop");
+        }
+        
+        txtSerial.setText(eq.getSerial());
+        txtDescricao.setText(eq.getDescricao());
+        if (eq.isEhNovo()) rbNovoSim.setSelected(true);
+        else rbNovoNao.setSelected(true);
+        txtValor.setValue(eq.getValorEstimado());
+
+        atualizarCampoOpcional();
+
+        if (eq instanceof Notebook) {
+            rbOpcionalSim.setSelected(((Notebook) eq).isCarregaDadosSensiveis());
+        } else if (eq instanceof Desktop) {
+            rbOpcionalSim.setSelected(((Desktop) eq).isEhServido());
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(TelaEquipamento::new);
     }
 }
