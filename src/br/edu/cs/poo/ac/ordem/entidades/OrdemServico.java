@@ -1,14 +1,12 @@
 package br.edu.cs.poo.ac.ordem.entidades;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import br.edu.cs.poo.ac.utils.Registro;
 
-import java.time.LocalDate;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import java.io.Serializable;
 
 @Getter @Setter
 
