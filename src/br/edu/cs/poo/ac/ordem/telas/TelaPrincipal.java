@@ -1,5 +1,7 @@
 package br.edu.cs.poo.ac.ordem.telas;
 
+import br.edu.cs.poo.ac.ordem.ui.OrdemServicoGUI;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -47,6 +49,20 @@ public class TelaPrincipal extends JFrame {
         crudEquip.setPreferredSize(new Dimension(250, 40));
         crudEquip.addActionListener(e -> new TelaEquipamento());
         menuEquip.add(crudEquip);
+
+        // --- MENU ORDEM DE SERVIÇO ---
+        JMenu menuOrdem = new JMenu("Ordem de Serviço");
+        menuOrdem.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        menuBar.add(menuOrdem);
+
+        JMenuItem crudOrdem = new JMenuItem("📋  Gerenciar Ordens");
+        crudOrdem.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        crudOrdem.setPreferredSize(new Dimension(250, 40));
+        crudOrdem.addActionListener(e -> {
+            OrdemServicoGUI gui = new OrdemServicoGUI();
+            gui.setVisible(true);
+        });
+        menuOrdem.add(crudOrdem);
 
         // Painel central com mensagem de boas-vindas
         JPanel painelCentral = new JPanel();
